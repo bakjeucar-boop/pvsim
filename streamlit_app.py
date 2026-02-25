@@ -29,8 +29,8 @@ if 'calc_end_date' not in st.session_state:
     st.session_state.calc_end_date = None
 
 # --- UI 헤더 ---
-st.title("☀️ 소규모 전력망 최적화 대시보드")
-st.markdown("태양광 발전량을 예측하고 최적화하는 프로그램입니다. 좌측 사이드바에서 설정을 변경하고 실행해보세요!")
+st.title("☀️ 소규모 전력망 최적화")
+st.markdown("태양광 발전량을 예측하는 프로그램입니다. 좌측 사이드바에서 설정을 변경하고 실행해보세요!")
 
 # --- 사이드바 (입력부) ---
 with st.sidebar:
@@ -171,11 +171,11 @@ if st.button("🚀 실행 (Execute)", type="primary", use_container_width=True):
                 total_hourly = None
                 
                 for i, gen in enumerate(st.session_state.generators):
-                    status.write(f"⛰️ [{gen.name}] 주변 지형지물 및 장애물(Obstacles) 음영 효과 분석 중...")
+                    status.write(f"⛰️ [{gen.name}] 주변 지형 및 장애물(Obstacles) 음영 효과 분석 중...")
                     obstaclesenabled = [o for o in gen.obstacles if o.get("enabled")]
                     lossparams = lossparamsforgenerator(gen)
                     
-                    status.write(f"⚡ [{gen.name}] 태양광 모듈 용량, 인버터 효율 및 시스템 손실(Losses) 파라미터 반영 중...")
+                    status.write(f"⚡ [{gen.name}] 태양광 모듈 용량, 인버터 효율 및 시스템 손실 파라미터 반영 중...")
                     status.write(f"🔄 [{gen.name}] 시간대별 일사량(GHI, DNI, DHI) 기반 발전량(kWh) 시뮬레이션 중...")
                     hourly, daily = computepvforgenerator(
                         weatherhourly, gen, obstaclesenabled, lossparams,
