@@ -79,7 +79,7 @@ with st.sidebar:
             gen.albedo = col6.number_input("알베도 (반사율)", value=float(gen.albedo), key=f"albedo_{i}")
             gen.plannedavailability = st.number_input("가동률 (%)", value=float(gen.plannedavailability)*100.0, key=f"avail_{i}") / 100.0
             
-            with st.expander("🚧 장애물 (Obstacles) 설정"):
+            with st.expander("🚧 장애물 (Obstacles)"):
                 obstacles_to_remove = []
                 for j, obs in enumerate(gen.obstacles):
                     st.markdown(f"**장애물 {j+1}**")
@@ -106,7 +106,7 @@ with st.sidebar:
                     gen.obstacles.append({"enabled": True, "centerazdeg": 0, "distm": 0, "heightm": 0, "widthm": 0})
                     st.rerun()
 
-            with st.expander("📉 손실 (Losses) 설정"):
+            with st.expander("📉 손실 (Losses)"):
                 for k, label in [
                     ("soiling", "Soiling"), ("mismatch", "Mismatch"), 
                     ("wiring", "Wiring"), ("connections", "Connections"), 
