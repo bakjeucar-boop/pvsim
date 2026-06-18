@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import math
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Tuple
 
@@ -69,6 +71,31 @@ SNOWLOSSONEVENT = 0.4
 SNOWRECOVERYDAYS = 2.0
 
 
+@contextmanager
+def withoutproxyenv():
+    proxykeys = [
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "ALL_PROXY",
+        "NO_PROXY",
+        "http_proxy",
+        "https_proxy",
+        "all_proxy",
+        "no_proxy",
+    ]
+    oldvalues = {key: os.environ.get(key) for key in proxykeys}
+    for key in proxykeys:
+        os.environ.pop(key, None)
+    try:
+        yield
+    finally:
+        for key, value in oldvalues.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
 def _first_col(df: pd.DataFrame, candidates: List[str]) -> str:
     for c in candidates:
         if c in df.columns:
@@ -117,7 +144,8 @@ def loadhorizonbase(lat, lon) -> pd.DataFrame:
         df = df.dropna().sort_values("azimuthdeg")
         return df[["azimuthdeg", "elevationdeg"]]
 
-    horizondata, _ = getpvgishorizon(lat, lon)
+    with withoutproxyenv():
+        horizondata, _ = getpvgishorizon(lat, lon)
     if isinstance(horizondata, pd.Series):
         df = pd.DataFrame({"azimuthdeg": horizondata.index.astype(float), "elevationdeg": horizondata.values.astype(float)})
     else:

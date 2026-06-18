@@ -7,6 +7,13 @@ import pandas as pd
 import requests
 
 
+def openmeteoget(url: str, params: dict, timeout: int = 30) -> requests.Response:
+    """Call Open-Meteo without inheriting broken local proxy settings."""
+    session = requests.Session()
+    session.trust_env = False
+    return session.get(url, params=params, timeout=timeout)
+
+
 def parseymd(s: str) -> date:
     return datetime.strptime(s.strip(), "%Y-%m-%d").date()
 
@@ -28,7 +35,7 @@ def resolvetimezoneandelevation(lat: float, lon: float, timeout: int = 20) -> Tu
         "hourly": "temperature_2m",
         "forecast_days": 1,
     }
-    r = requests.get(url, params=params, timeout=timeout)
+    r = openmeteoget(url, params=params, timeout=timeout)
     r.raise_for_status()
     data = r.json()
     tz = data.get("timezone", None)
@@ -75,7 +82,7 @@ def getweatherdataarchive(lat, lon, startdate, enddate, tz) -> Tuple[pd.DataFram
         "daily": "weather_code,temperature_2m_min,temperature_2m_max",
         "timezone": tz,
     }
-    res = requests.get(url, params=params, timeout=30)
+    res = openmeteoget(url, params=params, timeout=30)
     res.raise_for_status()
     data = res.json()
     return parseopenmeteohourlydata(data, tz), parseopenmeteodailydata(data)
@@ -96,7 +103,7 @@ def getweatherdataforecast(lat, lon, startdate, enddate, tz) -> Tuple[pd.DataFra
         "daily": "weather_code,temperature_2m_min,temperature_2m_max",
         "timezone": tz,
     }
-    res = requests.get(url, params=params, timeout=30)
+    res = openmeteoget(url, params=params, timeout=30)
     res.raise_for_status()
     data = res.json()
     return parseopenmeteohourlydata(data, tz), parseopenmeteodailydata(data)
