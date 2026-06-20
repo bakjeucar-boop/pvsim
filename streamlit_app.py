@@ -28,6 +28,111 @@ st.set_page_config(
 )
 
 
+FIELD_HELP_TEXTS = {
+    "gamma": (
+        "태양광 모듈 온도가 기준온도보다 올라갈 때 출력이 얼마나 감소하는지를 나타내는 값입니다.\n\n"
+        "추천값:\n"
+        "- 다결정 실리콘 모듈: -0.40 ~ -0.45 %/°C\n"
+        "- 단결정 실리콘 모듈: -0.30 ~ -0.40 %/°C\n"
+        "- 일반 결정질 실리콘 모듈: -0.35 %/°C\n"
+        "- 화합물 반도체(CIGS/CdTe): -0.20 ~ -0.35 %/°C\n"
+        "- 비정질 실리콘(a-Si): -0.15 ~ -0.25 %/°C"
+    ),
+    "bifaciality": (
+        "양면형 모듈의 후면 발전 효율을 나타내는 값입니다. 70%는 후면으로 들어오는 "
+        "반사광을 전면과 같은 효율로 100% 발전하는 것이 아니라, 전면 발전량 대비 약 "
+        "70% 수준의 효율로 전기를 생산한다는 의미입니다. 단면 모듈에서는 계산에 반영되지 않습니다.\n\n"
+        "추천값:\n"
+        "- 일반 양면형 모듈: 65 ~ 75%\n"
+        "- 고성능 양면형 모듈: 75 ~ 85%\n"
+        "- 보수적인 추정: 60 ~ 70%\n"
+        "- 현재 기본값: 70%"
+    ),
+    "azimuth": (
+        "태양광 모듈이 바라보는 방향입니다. 이 코드에서는 0도=북쪽, 90도=동쪽, "
+        "180도=남쪽, 270도=서쪽 기준으로 입력합니다.\n\n"
+        "추천값:\n"
+        "- 남향: 180도\n"
+        "- 남동향: 135도\n"
+        "- 남서향: 225도\n"
+        "- 동향: 90도\n"
+        "- 서향: 270도\n"
+        "- 북향: 0도"
+    ),
+    "albedo": (
+        "지표면이 햇빛을 얼마나 반사하는지를 나타내는 값입니다. 0에 가까울수록 반사가 적고, "
+        "1에 가까울수록 반사가 많습니다. 양면형 모듈에서는 지면 반사광이 후면 발전량에 영향을 줍니다.\n\n"
+        "추천값:\n"
+        "- 아스팔트: 0.05 ~ 0.12\n"
+        "- 흙/일반 지면: 0.15 ~ 0.25\n"
+        "- 잔디: 0.20 ~ 0.30\n"
+        "- 콘크리트: 0.25 ~ 0.40\n"
+        "- 밝은 콘크리트/흰색 지붕: 0.40 ~ 0.60\n"
+        "- 눈 덮인 지면: 0.60 ~ 0.90"
+    ),
+}
+
+LOSS_HELP_TEXTS = {
+    "soiling": (
+        "모듈 표면에 먼지, 꽃가루, 새 배설물, 오염물 등이 쌓여 발생하는 손실입니다.\n\n"
+        "추천값:\n"
+        "- 관리가 잘 되는 설비: 1 ~ 2%\n"
+        "- 일반적인 설비: 2 ~ 4%\n"
+        "- 먼지가 많은 지역/청소가 드문 경우: 4 ~ 8%"
+    ),
+    "mismatch": (
+        "모듈 간 출력 차이 때문에 발생하는 손실입니다. 같은 설비 안에서도 각 모듈의 성능이 조금씩 달라 "
+        "전체 출력이 줄어들 수 있습니다.\n\n"
+        "추천값:\n"
+        "- 모듈 품질/배치가 좋은 경우: 0.5 ~ 1%\n"
+        "- 일반적인 설비: 1 ~ 2%"
+    ),
+    "wiring": (
+        "전선에서 전기가 이동하면서 발생하는 손실입니다. 전선 길이가 길거나 전선 굵기가 부족하면 손실이 커집니다.\n\n"
+        "추천값:\n"
+        "- 설계가 좋은 경우: 1% 내외\n"
+        "- 일반적인 설비: 1 ~ 3%\n"
+        "- 전선 거리가 긴 경우: 3% 이상"
+    ),
+    "connections": (
+        "커넥터, 접속함, 단자 등 전기 연결부에서 발생하는 손실입니다.\n\n"
+        "추천값:\n"
+        "- 관리 상태가 좋은 경우: 0.5%\n"
+        "- 일반적인 설비: 0.5 ~ 1%\n"
+        "- 오래되었거나 접속부가 많은 경우: 1 ~ 2%"
+    ),
+    "lid": (
+        "Light Induced Degradation의 약자로, 모듈이 처음 햇빛에 노출된 뒤 초기 성능이 약간 감소하는 현상입니다.\n\n"
+        "추천값:\n"
+        "- LID 저감 모듈: 0.5 ~ 1%\n"
+        "- 일반 결정질 실리콘 모듈: 1 ~ 2%"
+    ),
+    "nameplate_rating": (
+        "모듈에 표시된 정격출력과 실제 출력 사이의 차이로 인한 손실입니다.\n\n"
+        "추천값:\n"
+        "- 양의 출력공차 모듈 사용 시: 0%\n"
+        "- 일반적인 설비: 0 ~ 1%\n"
+        "- 보수적으로 계산할 때: 1%"
+    ),
+    "age": (
+        "태양광 모듈이 시간이 지나면서 성능이 서서히 감소하는 손실입니다. 이 항목은 현재 계산에 바로 적용되는 "
+        "누적 손실률로 입력하는 것이 자연스럽습니다.\n\n"
+        "추천값:\n"
+        "- 신규 설비: 0%\n"
+        "- 설치 5년차: 약 2.5%\n"
+        "- 설치 10년차: 약 5%\n"
+        "- 일반적인 계산식: 사용연수 × 0.5%"
+    ),
+    "availability": (
+        "고장, 점검, 인버터 정지, 계통 문제 등으로 설비가 정상 가동하지 못하는 시간에 따른 손실입니다.\n\n"
+        "추천값:\n"
+        "- 관리가 잘 되는 상업용 설비: 0.5 ~ 2%\n"
+        "- 일반적인 설비: 1 ~ 3%\n"
+        "- 정전/고장이 잦은 경우: 3% 이상"
+    ),
+}
+
+
 def make_default_generator(name=None):
     return GeneratorConfig(
         name=name or "Generator 1",
@@ -517,6 +622,7 @@ def render_loss_dialog(key_prefix):
                     label,
                     value=bool(cur.get("enabled", True)),
                     key=f"{key_prefix}_loss_dialog_en_{key}",
+                    help=LOSS_HELP_TEXTS.get(key),
                 )
                 value = st.number_input(
                     "%",
@@ -573,6 +679,7 @@ def render_generator_input():
             value=float(gen.gammapctperc),
             step=0.01,
             key=f"{key_prefix}_gamma",
+            help=FIELD_HELP_TEXTS["gamma"],
         )
         face_options = ["Monofacial", "Bifacial"]
         face_idx = face_options.index(gen.facetype) if gen.facetype in face_options else 1
@@ -587,6 +694,7 @@ def render_generator_input():
                 max_value=100.0,
                 step=1.0,
                 key=f"{key_prefix}_bifaciality",
+                help=FIELD_HELP_TEXTS["bifaciality"],
             )
 
     with col2:
@@ -626,6 +734,7 @@ def render_generator_input():
             value=float(gen.surfaceazimuth),
             step=1.0,
             key=f"{key_prefix}_surfaceazimuth",
+            help=FIELD_HELP_TEXTS["azimuth"],
         )
         gen.surfacetilt = st.number_input(
             "경사각 [deg]",
@@ -646,6 +755,7 @@ def render_generator_input():
             max_value=1.0,
             step=0.01,
             key=f"{key_prefix}_albedo",
+            help=FIELD_HELP_TEXTS["albedo"],
         )
         gen.plannedavailability = (
             st.number_input(
